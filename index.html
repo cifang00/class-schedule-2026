@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <title>xinyu的课表</title>
+  <meta name="description" content="2026—2027学年第1学期，按周查看课程、调课及上下课时间。">
+  <style>
+    :root{color-scheme:dark;--h:68px;--b:30px;--left:56px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#050505}
+    *{box-sizing:border-box}body{margin:0;background:#050505;color:#f7f7f8}button{font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #fff;outline-offset:2px}[hidden]{display:none!important}
+    .app{max-width:980px;margin:auto;min-height:100vh;padding:max(18px,env(safe-area-inset-top)) 0 calc(90px + env(safe-area-inset-bottom))}
+    .top{padding:10px 12px 16px;text-align:center}.owner{margin:0 0 12px;color:#999;font-size:13px}.controls{display:grid;grid-template-columns:54px 1fr 54px;align-items:center}.controls button{width:46px;height:46px;border:0;border-radius:50%;background:#18181b;color:#ddd;font-size:34px}.controls button:disabled{opacity:.2;cursor:default}h1{margin:0;font-size:34px}.term{margin:6px 0 0;color:#888;font-size:12px}.date-range{margin:8px 0 12px;color:#aaa;font-size:12px}.views{display:inline-flex;padding:3px;border-radius:11px;background:#19191c;gap:3px}.views button{border:0;border-radius:8px;background:transparent;color:#999;padding:7px 18px;font-size:13px}.views button[aria-pressed="true"]{background:#343438;color:#fff}.hint{text-align:center;margin:0 12px 10px;color:#85858c;font-size:11px;line-height:1.6}
+    .notice,.other{margin:0 10px 12px;padding:12px 14px;border:1px solid #453b24;border-radius:13px;background:#19150b;color:#f1cf64;font-size:13px;line-height:1.6}.notice p{margin:4px 0 0;font-size:12px}.other{margin-top:14px;border-color:#27272b;background:#101012;color:#b5b5bd}.other h2{font-size:14px;margin:0 0 7px}.other p{margin:6px 0}.other small{color:#85858c}.footnote{margin:14px 16px;color:#6f6f78;font-size:11px;line-height:1.7}
+    .grid-scroll{overflow-x:auto}.grid{display:grid;grid-template-columns:var(--left) repeat(5,minmax(0,1fr));grid-template-rows:62px repeat(4,var(--h)) var(--b) repeat(4,var(--h)) var(--b) repeat(4,var(--h));position:relative;border-top:1px solid #262629;border-left:1px solid #262629;isolation:isolate}.grid.weekend{min-width:470px;grid-template-columns:var(--left) repeat(6,minmax(0,1fr))}.corner,.day{z-index:8;background:#050505;border-right:1px solid #262629;border-bottom:1px solid #262629}.corner{display:grid;place-items:center;color:#888;font-size:11px}.day{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.day strong{font-size:14px}.day span{color:#888;font-size:12px}.day.today{color:#58b0ff}.time{z-index:2;border-right:1px solid #262629;border-bottom:1px solid #262629;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.time strong{font-size:19px}.time span{color:#929299;font-size:10px;line-height:1.45;text-align:center}.cell{border-right:1px solid #262629;border-bottom:1px solid #262629}.break{z-index:6;grid-column:1/-1;display:grid;place-items:center;background:#1a1a1c;border-bottom:1px solid #262629;color:#888890;font-size:13px}
+    .course{z-index:5;margin:3px;padding:9px 7px;min-width:0;overflow:hidden;border:1px solid currentColor;border-radius:9px;text-align:left;display:flex;flex-direction:column;gap:5px}.course strong{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:5;font-size:clamp(11px,3.2vw,19px);line-height:1.34;word-break:break-all}.course span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(9px,2.45vw,13px);opacity:.9}.course small{font-size:9px}.conflict{color:#eed18a;background:#282214}.conflict strong{font-size:clamp(11px,2.8vw,16px);-webkit-line-clamp:3}.conflict .badge{white-space:normal;font-size:10px;line-height:1.4;color:#ffcf68}.conflict-item{padding-top:5px;border-top:1px solid #5a4926}
+    .teal{color:#34cbbd;background:#0a2423}.orange{color:#f0a133;background:#291907}.rust{color:#e85e3e;background:#33120c}.violet{color:#a186ff;background:#1d1935}.red{color:#f35b76;background:#321117}.gray{color:#b2b2b8;background:#1a1a1c}.pink{color:#f363a2;background:#351022}.yellow{color:#e5cd35;background:#29250a}.purple{color:#d576e9;background:#2b1031}.indigo{color:#87a3ff;background:#111735}.blue{color:#35adf5;background:#082333}
+    .agenda{padding:0 12px}.agenda-day{margin:0 0 20px}.agenda-day h2{font-size:16px;margin:12px 0 9px}.agenda-day h2 span{color:#888;font-size:12px;margin-left:8px}.agenda-card{width:100%;text-align:left;border:1px solid currentColor;border-radius:12px;padding:13px;margin:0 0 8px;display:block}.agenda-card strong{display:block;font-size:16px;line-height:1.5}.agenda-card span{display:block;font-size:13px;line-height:1.6;margin-top:4px}.agenda-card small{display:block;color:#ffcf68;margin-top:6px}.empty{color:#82828b;font-size:13px;margin:12px 0}
+    .weeks{position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);width:min(980px,100%);padding:9px 10px calc(9px + env(safe-area-inset-bottom));display:flex;gap:8px;border-top:1px solid #29292d;background:rgba(20,20,22,.94);backdrop-filter:blur(18px)}.now{flex:0 0 auto;padding:0 13px;border:0;border-radius:11px;background:#eee;color:#151517;font-size:13px;font-weight:700}.weeklist{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;min-width:0}.weeklist::-webkit-scrollbar{display:none}.weeklist button{flex:0 0 38px;width:38px;height:38px;border:1px solid #333;border-radius:50%;background:#202023;color:#b1b1b8}.weeklist .active{border-color:#178dff;background:#0874de;color:#fff;font-weight:700}
+    .backdrop{position:fixed;z-index:50;inset:0;display:flex;align-items:flex-end;justify-content:center;padding:18px;background:rgba(0,0,0,.68);backdrop-filter:blur(4px)}.sheet{position:relative;width:min(560px,100%);max-height:85vh;overflow-y:auto;padding:24px 20px calc(20px + env(safe-area-inset-bottom));border:1px solid currentColor;border-radius:22px;background:#161619;color:#ddd}.sheet .close{position:absolute;right:14px;top:13px;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:inherit;font-size:24px}.sheet h2{margin:0 42px 18px 0;font-size:24px}.detail-course{padding:14px 0;border-top:1px solid #333}.detail-course h3{font-size:20px;margin:0 0 12px;line-height:1.5}.sheet dl{margin:0;display:grid;gap:10px;font-size:14px}.sheet dl div{display:grid;grid-template-columns:62px 1fr;gap:8px}.sheet dt{color:#999}.sheet dd{margin:0;color:#f4f4f5;line-height:1.5;overflow-wrap:anywhere}.detail-warning{font-size:13px;color:#ffcf68;line-height:1.6;margin:0 0 14px}
+    @media(max-width:390px){:root{--h:65px;--left:51px}.course{margin:2px;padding:7px 5px;border-radius:7px}.course strong{font-size:11px}.course span{font-size:9px}.conflict strong{-webkit-line-clamp:2}.sheet h2{font-size:21px}}
+  </style>
+</head>
+<body>
+  <main class="app" id="app">
+    <header class="top">
+      <p class="owner">xinyu的课表</p>
+      <div class="controls"><button id="prev" aria-label="上一周">‹</button><div><h1 id="weekTitle" aria-live="polite"></h1><p class="term">2026—2027学年第1学期</p></div><button id="next" aria-label="下一周">›</button></div>
+      <p class="date-range" id="dateRange"></p>
+      <div class="views" aria-label="显示方式"><button id="gridView" aria-pressed="true">周表</button><button id="listView" aria-pressed="false">列表</button></div>
+    </header>
+    <p class="hint" id="hint">点课程查看完整名称、上下课时间和周次</p>
+    <aside class="notice" id="conflictNotice" hidden></aside>
+    <div class="grid-scroll" id="gridScroll"><section class="grid" id="grid" aria-label="周课程表"></section></div>
+    <section class="agenda" id="agenda" aria-label="本周课程列表" hidden></section>
+    <aside class="other" id="other" hidden></aside>
+    <p class="footnote">已按要求排除体育课程。第 1 周从 2026/8/31 开始；节次时间沿用原截图。数据更新：2026/10/9。</p>
+    <nav class="weeks" aria-label="选择周次"><button class="now" id="now">本周</button><div class="weeklist" id="weekList"></div></nav>
+  </main>
+  <div class="backdrop" id="backdrop" hidden><section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle" tabindex="-1"><button class="close" id="close" aria-label="关闭详情">×</button><h2 id="detailTitle"></h2><div id="detailContent"></div></section></div>
+  <script>
+    const times=[["08:30","09:10"],["09:10","09:50"],["10:10","10:50"],["10:50","11:30"],["13:50","14:30"],["14:30","15:10"],["15:20","16:00"],["16:00","16:40"],["18:00","18:40"],["18:40","19:20"],["19:30","20:10"],["20:10","20:50"]];
+    const days=["周一","周二","周三","周四","周五","周六","周日"],R=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i),C=(...a)=>a.flat();
+    // name, weekday (Monday=0), first/last period, weeks, room, teacher, color, adjusted
+    const courses=[
+      ["机器学习应用与实践",0,1,4,[19],"科技-403","邱家洪","teal",true],
+      ["鸿蒙应用程序设计",0,5,8,[17],"实-1603","陆晓梅","orange",true],
+      ["光网部署运维实战",0,9,12,C(R(2,4),R(7,11)),"实-1402","张家泉","rust",false],
+      ["机器学习应用与实践",1,1,4,C(R(2,4),R(6,8)),"实-1603","邱家洪","teal",true],
+      ["Java全栈开发实训",1,1,4,R(9,15),"科技-604","李伟林","violet",false],
+      ["鸿蒙应用程序设计",1,1,4,[18],"实-1603","陆晓梅","orange",true],
+      ["鸿蒙应用程序设计",1,5,8,C(R(2,4),R(6,18)),"实-1603","陆晓梅","orange",true],
+      ["军事理论",1,9,10,R(13,14),"实-5301","李阳阳","indigo",false],
+      ["美育",2,1,2,C(R(2,4),R(6,18)),"教1-405","贾阳果","red",false],
+      ["国家安全教育",2,3,4,C([4],R(9,15)),"教1-102","陈少娟","yellow",false],
+      ["形势与政策Ⅲ",2,3,4,R(15,18),"实-5101","邹开明","gray",false],
+      ["智能web前端开发实践",2,5,8,R(9,18),"教1-401-402","Ali Hashemizadeh","blue",false],
+      ["信创服务器的配置与管理",2,9,11,[17],"科技-604","蔡龙飞","pink",true],
+      ["信创服务器的配置与管理",2,9,12,C(R(3,4),R(6,16),R(18,19)),"科技-604","蔡龙飞","pink",true],
+      ["机器学习应用与实践",3,1,2,[18],"科技-601","邱家洪","teal",true],
+      ["智能体应用开发",3,1,4,C(R(1,4),R(6,10)),"科技-601","许淋镪","yellow",false],
+      ["机器学习应用与实践",3,1,4,C([11,13],R(14,17)),"科技-601","邱家洪","teal",true],
+      ["毛泽东思想和中国特色社会主义理论体系概论",3,5,6,C(R(1,4),R(6,11),R(13,18)),"教1-404","冯承恩","purple",false],
+      ["智能web前端开发实践",3,5,8,C(R(9,11),R(13,17)),"教1-401-402","Ali Hashemizadeh","blue",false],
+      ["就业与创业指导",3,7,8,R(2,3),"教1-804","林莹","indigo",false],
+      ["数据库技术及应用",4,1,4,C(R(1,3),R(10,11),R(13,17)),"科技-601","黄茂青","blue",false],
+      ["数据库技术及应用",4,1,8,R(6,9),"科技-601","黄茂青","blue",false],
+      ["就业与创业指导",4,9,10,R(6,11),"教1-804","林莹","indigo",false],
+      ["光网部署运维实战",5,9,12,[8],"实-1402","张家泉","rust",false]
+    ];
+    const extraCourses=[
+      {name:"影视鉴赏（尔雅网络课）",weeks:R(1,8),note:"未注明具体星期、节次和地点"},
+      {name:"劳动教育",weeks:[18],note:"教师：张嘉怡 · 未注明具体星期、节次和地点"}
+    ];
+    const $=s=>document.querySelector(s),row=p=>p<=4?p:p<=8?p+1:p+2;
+    const weekDate=(n,day=0)=>new Date(2026,7,31+(n-1)*7+day);
+    function current(){const d=new Date();return Math.min(20,Math.max(1,Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(2026,7,31))/604800000)+1))}
+    const requested=Number(new URLSearchParams(location.search).get('week'));
+    let week=Number.isInteger(requested)&&requested>=1&&requested<=20?requested:current(),view='grid',lastFocus=null;
+    function fmt(d){return `${d.getMonth()+1}/${d.getDate()}`}
+    function segments(c){return [[1,4],[5,8],[9,12]].map(([a,b])=>[Math.max(a,c[2]),Math.min(b,c[3])]).filter(([a,b])=>a<=b)}
+    function timeText(c){return segments(c).map(([a,b])=>`${times[a-1][0]}—${times[b-1][1]}`).join('、')}
+    function weeksText(ws){const runs=[];let a=ws[0],b=a;ws.slice(1).forEach(n=>{if(n===b+1)b=n;else{runs.push(a===b?`${a}`:`${a}—${b}`);a=b=n}});runs.push(a===b?`${a}`:`${a}—${b}`);return `第 ${runs.join('、')} 周`}
+    function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+    const overlaps=(a,b)=>a[1]===b[1]&&a[2]<=b[3]&&b[2]<=a[3];
+    function conflictPairs(active){return active.flatMap((a,i)=>active.slice(i+1).filter(b=>overlaps(a,b)).map(b=>[a,b]))}
+    // Split across meal breaks, then group overlapping cards so neither course is hidden.
+    function blocksFor(active){const blocks=active.flatMap(c=>segments(c).map(([start,end])=>({c,start,end})));const groups=[];
+      blocks.sort((a,b)=>a.c[1]-b.c[1]||a.start-b.start).forEach(b=>{const g=groups[groups.length-1];if(g&&g.day===b.c[1]&&b.start<=g.end){g.items.push(b);g.end=Math.max(g.end,b.end)}else groups.push({day:b.c[1],start:b.start,end:b.end,items:[b]})});return groups}
+    function renderGrid(active){const g=$('#grid'),dayCount=active.some(c=>c[1]===5)?6:5;g.innerHTML='';g.classList.toggle('weekend',dayCount===6);g.append(el('div','corner','节次'));
+      const today=fmt(new Date()),todayYear=new Date().getFullYear();days.slice(0,dayCount).forEach((name,i)=>{const d=weekDate(week,i),x=el('div','day',`<strong>${name}</strong><span>${fmt(d)}</span>`);x.style.gridColumn=i+2;x.style.gridRow=1;x.classList.toggle('today',fmt(d)===today&&d.getFullYear()===todayYear);g.append(x)});
+      times.forEach((t,i)=>{const x=el('div','time',`<strong>${i+1}</strong><span>${t[0]}<br>${t[1]}</span>`);x.style.gridColumn=1;x.style.gridRow=row(i+1)+1;g.append(x);for(let day=0;day<dayCount;day++){const cell=el('div','cell');cell.style.gridRow=row(i+1)+1;cell.style.gridColumn=day+2;g.append(cell)}});
+      [[6,'午休'],[11,'晚休']].forEach(([r,n])=>{const x=el('div','break',n);x.style.gridRow=r;g.append(x)});
+      blocksFor(active).forEach(b=>{const conflict=b.items.length>1,c=b.items[0].c;const html=conflict?`<span class="badge">${b.items.length} 门课 · 重叠</span>`+b.items.map(({c})=>`<div class="conflict-item"><strong>${c[0]}</strong></div>`).join(''):`<strong>${c[0]}</strong><span>@${c[5]}</span><span>${c[6]}</span>${c[8]?'<small>调课</small>':''}`;
+        const x=el('button',`course ${conflict?'conflict':c[7]}`,html);x.style.gridColumn=b.day+2;x.style.gridRow=`${row(b.start)+1}/${row(b.end)+2}`;x.setAttribute('aria-label',b.items.map(({c})=>`${c[0]}，${days[c[1]]}第${c[2]}至${c[3]}节`).join('；')+(conflict?'，时间重叠':''));x.onclick=()=>detail(b.items.map(({c})=>c));g.append(x)});
+    }
+    function renderAgenda(active){const a=$('#agenda');a.innerHTML='';const dayCount=active.some(c=>c[1]===5)?6:5;for(let day=0;day<dayCount;day++){const section=el('section','agenda-day',`<h2>${days[day]}<span>${fmt(weekDate(week,day))}</span></h2>`),items=active.filter(c=>c[1]===day).sort((a,b)=>a[2]-b[2]);if(!items.length)section.append(el('p','empty','没有安排课程'));items.forEach(c=>{const conflict=active.some(b=>b!==c&&overlaps(c,b));const b=el('button',`agenda-card ${c[7]}`,`<strong>${c[8]?'【调】':''}${c[0]}</strong><span>第${c[2]}—${c[3]}节 · ${timeText(c)}</span><span>${c[5]} · ${c[6]}</span>${conflict?'<small>与另一门课时间重叠，请核对教务安排</small>':''}`);b.onclick=()=>detail([c]);section.append(b)});a.append(section)}}
+    function render(){const active=courses.filter(c=>c[4].includes(week)),pairs=conflictPairs(active);$('#weekTitle').textContent=`第${week}周`;$('#dateRange').textContent=`${fmt(weekDate(week))}—${fmt(weekDate(week,6))}`;$('#prev').disabled=week===1;$('#next').disabled=week===20;
+      const notice=$('#conflictNotice');notice.hidden=!pairs.length;notice.innerHTML='<strong>本周有课程时间重叠</strong>'+pairs.map(([a,b])=>`<p>${days[a[1]]}第${Math.max(a[2],b[2])}—${Math.min(a[3],b[3])}节：${a[0]} / ${b[0]}</p>`).join('')+'<p>两门均按原课表保留，请以教务最终安排为准。</p>';
+      renderGrid(active);renderAgenda(active);$('#gridScroll').hidden=view!=='grid';$('#agenda').hidden=view!=='list';$('#gridView').setAttribute('aria-pressed',view==='grid');$('#listView').setAttribute('aria-pressed',view==='list');$('#hint').textContent=view==='list'?'点课程查看完整周次和调课信息':active.some(c=>c[1]===5)?'本周有周六课程，周表可横向滑动；也可切换列表':'点课程查看完整名称、上下课时间和周次';
+      const extra=extraCourses.filter(c=>c.weeks.includes(week));$('#other').hidden=!extra.length;$('#other').innerHTML='<h2>其他课程（未排具体节次）</h2>'+extra.map(c=>`<p>${c.name} · ${weeksText(c.weeks)}<br><small>${c.note}</small></p>`).join('');
+      document.querySelectorAll('.weeklist button').forEach((b,i)=>{b.classList.toggle('active',i+1===week);b.setAttribute('aria-current',i+1===week?'true':'false')});const b=$('.weeklist .active'),list=$('#weekList');if(b)list.scrollTo({left:b.offsetLeft-list.offsetLeft-list.clientWidth/2+b.clientWidth/2,behavior:'smooth'});
+    }
+    function detail(items){lastFocus=document.activeElement;const active=courses.filter(c=>c[4].includes(week));$('#detailTitle').textContent=items.length>1?'课程时间重叠':`${days[items[0][1]]} · 第${week}周`;
+      const conflict=items.length>1||items.some(c=>active.some(b=>b!==c&&overlaps(c,b)));$('#detailContent').innerHTML=(conflict?'<p class="detail-warning">原课表在此时段列有重叠课程，均已保留。请核对教务最终安排。</p>':'')+items.map(c=>`<article class="detail-course"><h3>${c[8]?'【调】':''}${c[0]}</h3><dl><div><dt>节次</dt><dd>${days[c[1]]} · 第${c[2]}—${c[3]}节</dd></div><div><dt>时间</dt><dd>${timeText(c)}</dd></div><div><dt>地点</dt><dd>${c[5]}</dd></div><div><dt>教师</dt><dd>${c[6]}</dd></div><div><dt>周次</dt><dd>${weeksText(c[4])}</dd></div></dl></article>`).join('');$('#backdrop').hidden=false;document.body.style.overflow='hidden';$('#close').focus();
+    }
+    function closeDetail(){if($('#backdrop').hidden)return;$('#backdrop').hidden=true;document.body.style.overflow='';lastFocus?.focus()}
+    function go(n){closeDetail();week=Math.min(20,Math.max(1,n));const url=new URL(location.href);url.searchParams.set('week',week);history.replaceState(null,'',url);render()}
+    $('#prev').onclick=()=>go(week-1);$('#next').onclick=()=>go(week+1);$('#now').onclick=()=>go(current());$('#gridView').onclick=()=>{view='grid';render()};$('#listView').onclick=()=>{view='list';render()};$('#close').onclick=closeDetail;$('#backdrop').onclick=e=>{if(e.target.id==='backdrop')closeDetail()};
+    R(1,20).forEach(n=>{const b=el('button','',n);b.setAttribute('aria-label',`第${n}周`);b.onclick=()=>go(n);$('#weekList').append(b)});
+    document.addEventListener('keydown',e=>{if(!$('#backdrop').hidden){if(e.key==='Escape')closeDetail();if(e.key==='Tab'){const focusable=$('#sheet').querySelectorAll('button');if(focusable.length===1){e.preventDefault();focusable[0].focus()}}return}if(e.key==='ArrowLeft')go(week-1);if(e.key==='ArrowRight')go(week+1)});
+    render();
+  </script>
+</body>
+</html>

@@ -34,7 +34,7 @@
     <div class="grid-scroll" id="gridScroll"><section class="grid" id="grid" aria-label="周课程表"></section></div>
     <section class="agenda" id="agenda" aria-label="本周课程列表" hidden></section>
     <aside class="other" id="other" hidden></aside>
-    <p class="footnote">已按要求排除体育课程。第 1 周从 2026/8/31 开始；节次时间沿用原截图。数据更新：2026/10/9。</p>
+    <p class="footnote">已按要求排除体育课程。第 1 周从 2026/8/31 开始；节次时间沿用原截图。数据更新：2026/10/29。</p>
     <nav class="weeks" aria-label="选择周次"><button class="now" id="now">本周</button><div class="weeklist" id="weekList"></div></nav>
   </main>
   <div class="backdrop" id="backdrop" hidden><section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle" tabindex="-1"><button class="close" id="close" aria-label="关闭详情">×</button><h2 id="detailTitle"></h2><div id="detailContent"></div></section></div>
@@ -51,12 +51,13 @@
       ["鸿蒙应用程序设计",1,1,4,[18],"实-1603","陆晓梅","orange",true],
       ["鸿蒙应用程序设计",1,5,8,C(R(2,4),R(6,18)),"实-1603","陆晓梅","orange",true],
       ["军事理论",1,9,10,R(13,14),"实-5301","李阳阳","indigo",false],
-      ["美育",2,1,2,C(R(2,4),R(6,18)),"教1-405","贾阳果","red",false],
+      ["美育",2,1,2,C(R(2,4),R(6,9),[12,18]),"教1-405","贾阳果","red",false],
+      ["信创服务器的配置与管理",2,1,4,[19],"科技-403","蔡龙飞","pink",false],
       ["国家安全教育",2,3,4,C([4],R(9,15)),"教1-102","陈少娟","yellow",false],
       ["形势与政策Ⅲ",2,3,4,R(15,18),"实-5101","邹开明","gray",false],
       ["智能web前端开发实践",2,5,8,R(9,18),"教1-401-402","Ali Hashemizadeh","blue",false],
       ["信创服务器的配置与管理",2,9,11,[17],"科技-604","蔡龙飞","pink",true],
-      ["信创服务器的配置与管理",2,9,12,C(R(3,4),R(6,16),R(18,19)),"科技-604","蔡龙飞","pink",true],
+      ["信创服务器的配置与管理",2,9,12,C(R(3,4),R(6,9),R(11,16),R(18,19)),"科技-604","蔡龙飞","pink",true],
       ["机器学习应用与实践",3,1,2,[18],"科技-601","邱家洪","teal",true],
       ["智能体应用开发",3,1,4,C(R(1,4),R(6,10)),"科技-601","许淋镪","yellow",false],
       ["机器学习应用与实践",3,1,4,C([11,13],R(14,17)),"科技-601","邱家洪","teal",true],
@@ -65,6 +66,7 @@
       ["就业与创业指导",3,7,8,R(2,3),"教1-804","林莹","indigo",false],
       ["数据库技术及应用",4,1,4,C(R(1,3),R(10,11),R(13,17)),"科技-601","黄茂青","blue",false],
       ["数据库技术及应用",4,1,8,R(6,9),"科技-601","黄茂青","blue",false],
+      ["美育",4,5,6,C(R(10,11),R(13,17)),"实-5503","贾阳果","red",false],
       ["就业与创业指导",4,9,10,R(6,11),"教1-804","林莹","indigo",false],
       ["光网部署运维实战",5,9,12,[8],"实-1402","张家泉","rust",false]
     ];
@@ -101,7 +103,7 @@
       const extra=extraCourses.filter(c=>c.weeks.includes(week));$('#other').hidden=!extra.length;$('#other').innerHTML='<h2>其他课程（未排具体节次）</h2>'+extra.map(c=>`<p>${c.name} · ${weeksText(c.weeks)}<br><small>${c.note}</small></p>`).join('');
       document.querySelectorAll('.weeklist button').forEach((b,i)=>{b.classList.toggle('active',i+1===week);b.setAttribute('aria-current',i+1===week?'true':'false')});const b=$('.weeklist .active'),list=$('#weekList');if(b)list.scrollTo({left:b.offsetLeft-list.offsetLeft-list.clientWidth/2+b.clientWidth/2,behavior:'smooth'});
     }
-    function detail(items){lastFocus=document.activeElement;const active=courses.filter(c=>c[4].includes(week));$('#detailTitle').textContent=items.length>1?'课程时间重叠':`${days[items[0][1]]} · 第${week}周`;
+    function detail(items){lastFocus=document.activeElement;const active=courses.filter(c=>c[4].includes(week));let expanded=true;while(expanded){const related=active.filter(c=>!items.includes(c)&&items.some(b=>overlaps(c,b)));expanded=related.length>0;items=items.concat(related)}$('#detailTitle').textContent=items.length>1?'课程时间重叠':`${days[items[0][1]]} · 第${week}周`;
       const conflict=items.length>1||items.some(c=>active.some(b=>b!==c&&overlaps(c,b)));$('#detailContent').innerHTML=(conflict?'<p class="detail-warning">原课表在此时段列有重叠课程，均已保留。请核对教务最终安排。</p>':'')+items.map(c=>`<article class="detail-course"><h3>${c[8]?'【调】':''}${c[0]}</h3><dl><div><dt>节次</dt><dd>${days[c[1]]} · 第${c[2]}—${c[3]}节</dd></div><div><dt>时间</dt><dd>${timeText(c)}</dd></div><div><dt>地点</dt><dd>${c[5]}</dd></div><div><dt>教师</dt><dd>${c[6]}</dd></div><div><dt>周次</dt><dd>${weeksText(c[4])}</dd></div></dl></article>`).join('');$('#backdrop').hidden=false;document.body.style.overflow='hidden';$('#close').focus();
     }
     function closeDetail(){if($('#backdrop').hidden)return;$('#backdrop').hidden=true;document.body.style.overflow='';lastFocus?.focus()}
